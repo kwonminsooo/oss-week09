@@ -52,6 +52,13 @@ form.addEventListener("submit", async (event) => {
   render();
 });
 
+for (const input of [rainInput, windInput]) {
+  input.addEventListener("input", () => {
+    state.limits = { rain: Number(rainInput.value), wind: Number(windInput.value) };
+    render();
+  });
+}
+
 // 하루 객체 하나 → <tr> 한 줄 (Date, Max, Wind, Rain)
 function dayRow(day) {
   const tr = document.createElement("tr");
