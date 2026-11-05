@@ -1,4 +1,5 @@
 import { getForecast } from "./api.js";
+import { toDays } from "./logic.js";
 // main.js — 화면 담당. P1 ~ P5, P7 에서 이어서 채웁니다.
 //
 // 상황: index.html 에 폼과 빈 표가 있고, 이 파일이 <script type="module"> 로 연결되어 있습니다.
@@ -23,23 +24,41 @@ const form = document.querySelector("#run-form");
 const citySelect = document.querySelector("#city");
 const rainInput = document.querySelector("#rain-limit");
 const windInput = document.querySelector("#wind-limit");
-const statusE1 = document.querySelector("#status");
+const statusEl = document.querySelector("#status");
 const summaryEl = document.querySelector("#summary");
-const rowsE1 = document.querySelector("#rows");
+const rowsEl = document.querySelector("#rows");
 
-form.addEventListener("submit", async(event) => {
+const state = { city: null, days: [] };
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const city = CITIES[citySelect.value];
-  statusE1.textContent="Loading...";
-  statusE1.classList.remove("error");
+  statusEl.textContent = "Loading...";
+  statusEl.classList.remove("error");
   try {
     const daily = await getForecast(city);
-    statusE1.textContent="";
-    console.log(daily);
+    state.city = city;
+    state.days = toDays(daily);
+    statusEl.textContent = "";
   } catch (err) {
-    statusE1.textContent=`Could not load the forecast (${err.message}).`;
-    statusE1.classList.add("error");
+    statusEl.textContent = `Could not load the forecast (${err.message}).`;
+    statusEl.classList.add("error");
   }
+  render();
 });
 
+// 하루 객체 하나 → <tr> 한 줄 (Date, Max, Wind, Rain)
+function dayRow(day) {
+  const tr = document.createElement("tr");
+  for (const text of [day.date.slice(5), `${day.max}°`, `${day.wind} km/h`, `${day.rain}%`]) {
+    const td = document.createElement("td");
+    td.textContent = text;
+    tr.append(td);
+  }
+  return tr;
+}
 
+// state 로 표를 다시 그립니다. 요약 줄은 P4 에서 넣습니다.
+function render() {
+  rowsEl.replaceChildren(...state.days.map(dayRow));
+}
