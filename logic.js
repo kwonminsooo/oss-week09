@@ -17,8 +17,15 @@ export function toDays(daily) {
   }));
 }
 
+export function reasons(day, limits) {
+  const over = [];
+  if (day.rain > limits.rain) over.push("rain");
+  if (day.wind > limits.wind) over.push("wind");
+  return over;
+}
+
 export function isGoodDay(day, limits) {
-  return day.rain <= limits.rain && day.wind <= limits.wind;
+  return reasons(day, limits).length === 0;
 }
 
 export function summarize(days, limits) {
