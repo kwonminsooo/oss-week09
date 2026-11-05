@@ -11,7 +11,7 @@ const BASE = "https://api.open-meteo.com/v1/forecast";
 
 // P2: 여기에 getForecast 를 씁니다.
 export const getForecast = async function({ lat, lon }) {
-  const url = `${BASE}?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,precipitation_probability_max,windspeed_10m_max&timezone=Asia/Seoul`;
+  const url = `${BASE}?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,precipitation_probability_max,wind_speed_10m_max&timezone=Asia/Seoul&forecast_days=7`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
